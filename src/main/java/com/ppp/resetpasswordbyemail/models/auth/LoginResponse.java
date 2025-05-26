@@ -9,7 +9,6 @@ import lombok.ToString;
 @Setter
 @AllArgsConstructor
 @ToString
-
 public class LoginResponse {
 
     private String token;

@@ -14,25 +14,21 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-/*
-import com.unla.agroecologiaiot.filters.AuthenticationFilter;
-import com.unla.agroecologiaiot.filters.AuthorizationFilter;
-import com.unla.agroecologiaiot.services.ITokenService;
-*/
-
 import com.ppp.resetpasswordbyemail.repositories.ApplicationUserRepository;
 import com.ppp.resetpasswordbyemail.repositories.SessionRepository;
 import com.ppp.resetpasswordbyemail.services.implementation.ApplicationUserService;
 import com.ppp.resetpasswordbyemail.services.ITokenService;
 import com.ppp.resetpasswordbyemail.constants.SecurityConstants;
+import com.ppp.resetpasswordbyemail.filters.AuthenticationFilter;
+import com.ppp.resetpasswordbyemail.filters.AuthorizationFilter;
 
-import org.springframework.security.web.access.intercept.AuthorizationFilter;
-import org.springframework.security.web.authentication.AuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-public class SecurityConfiguration {
+@EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
+public class SecurityConfiguration /*extends WebSecurityConfigurerAdapter*/{
 
     private ApplicationUserService userService;
     @Autowired
@@ -49,14 +45,14 @@ public class SecurityConfiguration {
         this.userService = userService;
     }
 
-  //  @Override
+   // @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable().authorizeRequests()
                 .requestMatchers(SecurityConstants.SWAGGER_URL_WHITELIST).permitAll()
                 .anyRequest().authenticated()
                 .and()
-              //  .addFilter(getAuthenticationFilter())
-              //  .addFilter(new AuthorizationFilter(authenticationManager(), applicationUserRepository))
+               // .addFilter(getAuthenticationFilter())
+               // .addFilter(new AuthorizationFilter(authenticationManager(), applicationUserRepository))
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
 
@@ -65,15 +61,15 @@ public class SecurityConfiguration {
                 .requestMatchers(SecurityConstants.METRIC_READINGS);
     }
 
-   /*
-   public AuthenticationFilter getAuthenticationFilter() throws Exception {
+   
+ /*   public AuthenticationFilter getAuthenticationFilter() throws Exception {
         final AuthenticationFilter authFilter = new AuthenticationFilter(authenticationManager(),
                 applicationUserRepository, sessionRepository, tokenService);
         authFilter.setFilterProcessesUrl(SecurityConstants.LOGIN_URL);
         return authFilter;
     }
-    */ 
-
+        */
+    
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         final CorsConfiguration configuration = new CorsConfiguration();
@@ -88,7 +84,7 @@ public class SecurityConfiguration {
         return source;
     }
 
-  //  @Override
+ //   @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userService).passwordEncoder(new BCryptPasswordEncoder());
     }
